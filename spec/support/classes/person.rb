@@ -2,6 +2,5 @@
 
 class Person < Base
   has_many :groups
-
-  readable_by :groups
+  has_many :departments, through: :groups
 end
