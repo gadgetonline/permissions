@@ -30,14 +30,18 @@ GEM
     arel (8.0.0)
     ast (2.4.0)
     builder (3.2.3)
+    byebug (10.0.0)
     coderay (1.1.2)
     concurrent-ruby (1.0.5)
     crass (1.0.3)
+    database_cleaner (1.6.2)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.3)
     docile (1.1.5)
     erubi (1.7.0)
+    faker (1.8.7)
+      i18n (>= 0.7)
     faraday (0.12.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.18)
@@ -58,6 +62,15 @@ GEM
       pry (>= 0.9.12)
       shellany (~> 0.0)
       thor (>= 0.18.1)
+    guard-compat (1.2.1)
+    guard-rspec (4.7.3)
+      guard (~> 2.1)
+      guard-compat (~> 1.1)
+      rspec (>= 2.99.0, < 4.0)
+    guard-spring (1.1.1)
+      guard (~> 2.0)
+      guard-compat (~> 1.1)
+      spring
     hashie (3.5.7)
     highline (1.7.10)
     i18n (0.9.3)
@@ -130,6 +143,10 @@ GEM
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     rdoc (6.0.1)
+    rspec (3.7.0)
+      rspec-core (~> 3.7.0)
+      rspec-expectations (~> 3.7.0)
+      rspec-mocks (~> 3.7.0)
     rspec-core (3.7.1)
       rspec-support (~> 3.7.0)
     rspec-expectations (3.7.0)
@@ -163,6 +180,9 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
+    spring (2.0.2)
+      activesupport (>= 4.2)
+    sqlite3 (1.3.13)
     thor (0.20.0)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
@@ -173,15 +193,23 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord (>= 5.1.4)
+  activerecord
+  activesupport
   bundler (~> 1.0)
+  byebug
+  database_cleaner
+  faker
   guard
+  guard-rspec
+  guard-spring
   juwelier (~> 2.1.0)
   pundit
+  rake
   rdoc
   rspec-rails
   rubocop
   simplecov
+  sqlite3
 
 BUNDLED WITH
    1.16.1

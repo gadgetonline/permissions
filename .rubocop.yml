@@ -1,2 +1,17 @@
-inherit_from: .rubocop_todo.yml
+AllCops:
+  Exclude:
+    - 'Guardfile'
+    - 'bin/**/*'
+    - 'spec/support/skeleton'
+  TargetRubyVersion: 2.4
 
+Metrics/LineLength:
+  Exclude:
+    - Guardfile
+  Max: 100
+
+Style/Documentation:
+  Enabled: false
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/permissions.rb'
