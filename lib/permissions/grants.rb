@@ -5,6 +5,8 @@ module Permissions
     def self.included(base)
       base.instance_eval do
         def readable_by(association, *associations)
+          ([association] + associations).each do |assoc|
+            raise
         end
       end
 
