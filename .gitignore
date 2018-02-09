@@ -1,9 +1,10 @@
-.bundle
-.byebug_history
-.DS_Store
 #*~
 #\#*
 #tmtags
+*.log
+.DS_Store
+.bundle
+.byebug_history
 coverage
 coverage.data
 doc

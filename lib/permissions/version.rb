@@ -7,6 +7,6 @@ module Permissions
     PATCH = 3
     BUILD = 'pre3'
 
-    STRING = [MAJOR, MINOR, PATCH, BUILD].compact.join('.')
+    VERSION = [MAJOR, MINOR, PATCH, BUILD].compact.join('.')
   end
 end

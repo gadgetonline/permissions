@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+class CreatePermissions < ActiveRecord::Migration<%= migration_version %>
+  def change
+    create_table :permissions, force: true do |t|
+      t.string   :class_name, required: true
+      t.datetime :created_at, required: true
+      t.boolean  :readable,   required: false, default: nil
+    end
+
+    add_index :permissions, %i[class_name instance_id]
+  end
+end

@@ -1,24 +1,27 @@
 # frozen_string_literal: true
 
-ENV['RAILS_ENV'] ||= 'test'
-ENV['DB']        ||= 'sqlite'
-
-require File.expand_path('../support/skeleton/config/environment', __FILE__)
+require 'active_record'
+require 'bundler/setup'
 require 'byebug'
 require 'database_cleaner'
 require 'faker'
 require 'permissions'
-require 'rspec/rails'
-
-DatabaseCleaner.strategy = :transaction
 
 Dir[File.join(File.expand_path('../support', __FILE__), '**', '*.rb')].each { |f| require f }
 
 RSpec.configure do |config|
   Kernel.srand config.seed
 
-  config.after  { DatabaseCleaner.clean }
-  config.before { DatabaseCleaner.start }
+  config.after(:each) { DatabaseCleaner.clean }
+
+  config.before(:all) do
+    ActiveRecord::Base.establish_connection(
+      adapter:  'sqlite3',
+      database: ':memory:'
+    )
+  end
+
+  config.before(:each) { DatabaseCleaner.start }
 
   config.disable_monkey_patching!
   config.example_status_persistence_file_path = 'spec/status.txt'
@@ -35,6 +38,7 @@ RSpec.configure do |config|
     # ...rather than:
     #     # => "be bigger than 2"
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+    expectations.syntax = :expect
   end
 
   config.filter_run_when_matching :focus
@@ -58,6 +62,6 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  config.use_transactional_fixtures = true
+  # config.use_transactional_fixtures = true
   config.warnings = true
 end
