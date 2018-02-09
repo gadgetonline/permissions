@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'pundit'
   spec.add_dependency 'activerecord'
 
+  spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'database_cleaner'
@@ -32,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec-rails'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency 'table_print'
 
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
