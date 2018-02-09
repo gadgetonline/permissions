@@ -1,5 +1,6 @@
 AllCops:
   Exclude:
+    - 'permissions.gemspec'
     - 'Guardfile'
     - 'bin/**/*'
     - 'spec/support/skeleton'
