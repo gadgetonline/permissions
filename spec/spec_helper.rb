@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/BlockLength
+
 require 'active_record'
 require 'awesome_print'
 require 'bundler/setup'
 require 'byebug'
 require 'database_cleaner'
+require 'factory_bot_rails'
 require 'faker'
 require 'permissions'
 require 'table_print'
@@ -41,6 +44,10 @@ RSpec.configure do |config|
 
   config.before(:each) { DatabaseCleaner.start }
 
+  config.before(:suite) do
+    FactoryBot.reload
+  end
+
   config.disable_monkey_patching!
   config.example_status_persistence_file_path = 'spec/status.txt'
 
@@ -50,6 +57,7 @@ RSpec.configure do |config|
   end
 
   config.filter_run_when_matching :focus
+  config.include FactoryBot::Syntax::Methods
 
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
@@ -60,3 +68,5 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
   config.warnings = true
 end
+
+# rubocop:enable Metrics/BlockLength

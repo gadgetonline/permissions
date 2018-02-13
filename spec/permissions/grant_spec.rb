@@ -19,7 +19,7 @@ RSpec.describe 'grant features' do
   end
 
   describe 'records access' do
-    subject(:grant) { widget.grant :readable, on: Group, to: widget }
+    subject(:grant) { widget.grant :readable, on: Store, to: widget }
 
     context 'for a class' do
       specify 'creates an entry' do
@@ -28,7 +28,7 @@ RSpec.describe 'grant features' do
 
       specify 'with the right object name' do
         grant
-        expect(Permissions::Permission.last.object_type).to eq('Group')
+        expect(Permissions::Permission.last.object_type).to eq('Store')
       end
 
       specify 'with an object ID of nil' do

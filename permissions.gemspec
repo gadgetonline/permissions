@@ -16,13 +16,15 @@ Gem::Specification.new do |spec|
   spec.summary       = 'Define fine-grained access control on Active Record models'
   spec.version       = Permissions::Version::VERSION
 
-  spec.add_dependency 'pundit'
   spec.add_dependency 'activerecord'
+  spec.add_dependency 'active_record_union'
+  spec.add_dependency 'pundit'
 
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'database_cleaner'
+  spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'faker'
   spec.add_development_dependency 'guard'
   spec.add_development_dependency 'guard-rspec'

@@ -3,7 +3,7 @@
 # rubocop:disable Metrics/MethodLength
 
 module Permissions
-  module Controls
+  module Rules
     def self.included(base)
       base.instance_eval do
         def readable_by(association, *associations)
@@ -15,12 +15,6 @@ module Permissions
           end
 
           perms ||= {}
-        end
-
-        private
-
-        def active_record_associations_include?(association)
-          reflect_on_all_associations.map(&:name).include?(association.to_sym)
         end
       end
     end
