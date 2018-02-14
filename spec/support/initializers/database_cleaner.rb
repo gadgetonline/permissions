@@ -1,1 +1,1 @@
-DatabaseCleaner.strategy = :transaction
+DatabaseCleaner.strategy = :truncation

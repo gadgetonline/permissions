@@ -3,6 +3,7 @@
 require 'active_record'
 require 'pundit'
 
+require_relative 'permissions/concerned_with'
 require_relative 'permissions/exceptions'
 require_relative 'permissions/grants'
 require_relative 'permissions/permission'

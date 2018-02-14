@@ -2,6 +2,11 @@
 
 module Permissions
   class Permission < ActiveRecord::Base
-    belongs_to :grantee, polymorphic: true
+    extend ConcernedWith
+
+    concerned_with(
+      :permission_active_record,
+      :permission_scopes
+    )
   end
 end

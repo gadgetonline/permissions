@@ -11,6 +11,8 @@ module Permissions
         (@type, @id) =
           if object.is_a?(Class)
             [object.name, nil]
+          elsif object.is_a?(String)
+            [object, nil]
           else
             [object.class.name, object.id]
           end

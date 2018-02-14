@@ -13,6 +13,11 @@ RSpec.shared_context 'item migration' do
       t.belongs_to  :organization, required: true, index: true
     end
 
-    FactoryBot.lint(FactoryBot.factories.select { |f| f.name.to_s.start_with?('item') })
+    begin
+      DatabaseCleaner.start
+      FactoryBot.lint(FactoryBot.factories.select { |f| f.name.to_s.start_with?('item') })
+    ensure
+      DatabaseCleaner.clean
+    end
   end
 end

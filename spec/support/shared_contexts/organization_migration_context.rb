@@ -10,6 +10,11 @@ RSpec.shared_context 'organization migration' do
       t.string :name, default: nil, required: false
     end
 
-    FactoryBot.lint(FactoryBot.factories.select { |f| f.name.to_s.start_with?('organization') })
+    begin
+      DatabaseCleaner.start
+      FactoryBot.lint(FactoryBot.factories.select { |f| f.name.to_s.start_with?('organization') })
+    ensure
+      DatabaseCleaner.clean
+    end
   end
 end
