@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activerecord'
   spec.add_dependency 'active_record_union'
+  spec.add_dependency 'bitmask_attributes'
   spec.add_dependency 'pundit'
 
   spec.add_development_dependency 'awesome_print'

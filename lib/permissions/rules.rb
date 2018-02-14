@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/MethodLength
-
 module Permissions
   module Rules
     def self.included(base)
@@ -14,11 +12,9 @@ module Permissions
               active_record_associations_include?(assoc)
           end
 
-          perms ||= {}
+          # perms ||= {}
         end
       end
     end
   end
 end
-
-# rubocop:enable Metrics/MethodLength

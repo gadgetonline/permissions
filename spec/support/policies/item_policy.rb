@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/MethodLength
+
 class ItemPolicy < ApplicationPolicy
   class Scope < Scope
     def readable
       readable_scope = no_permissions_scope(scope)
 
-      byebug
       if user.permissions.any?
         readable_scope = scope_for_permitted_items readable_scope
         readable_scope = scope_for_permitted_stores readable_scope
@@ -80,18 +81,15 @@ class ItemPolicy < ApplicationPolicy
     end
   end
 
-  def create?
-  end
+  def create?; end
 
-  def destroy?
-  end
+  def destroy?; end
 
   def read?
     item_policy_scope.readable.where(id: record).exists?
   end
 
-  def write?
-  end
+  def write?; end
 
   private
 
@@ -99,3 +97,5 @@ class ItemPolicy < ApplicationPolicy
     ItemPolicy::Scope.new(user, Item)
   end
 end
+
+# rubocop:enable Metrics/MethodLength
