@@ -3,11 +3,15 @@
 class ItemPolicy < ApplicationPolicy
   class Scope < Scope
     def readable
-      return(no_permissions_scope(scope)) if user.permissions.empty?
+      readable_scope = no_permissions_scope(scope)
 
-      readable_scope = scope_for_permitted_items readable_scope
-      readable_scope = scope_for_permitted_stores readable_scope
-      scope_for_permitted_organizations readable_scope
+      if user.permissions.any?
+        readable_scope = scope_for_permitted_items readable_scope
+        readable_scope = scope_for_permitted_stores readable_scope
+        readable_scope = scope_for_permitted_organizations readable_scope
+      end
+
+      readable_scope
     end
 
     def writeable
@@ -44,9 +48,8 @@ class ItemPolicy < ApplicationPolicy
       return(scope.all) if user.permissions.permission_for_class(Item).exists?
       return(initial_scope) if user.permissions.permissions_for_instances(Item).empty?
 
-      ids            = user.permissions.permission_for_instances(Item).pluck(:object_id)
-      expanded_scope = Item.where(id: ids)
-      initial_scope.union expanded_scope
+      ids = user.permissions.permissions_for_instances(Item).pluck(:object_id)
+      Item.where(id: ids)
     end
 
     def scope_for_permitted_organizations(initial_scope) # rubocop:disable Metrics/AbcSize
@@ -63,7 +66,7 @@ class ItemPolicy < ApplicationPolicy
         user.permissions.permission_for_class(Store).exists? ||
         user.permissions.permissions_for_instances(Store).empty?
 
-      ids            = user.permissions.permission_for_instances(Store).pluck(:object_id)
+      ids            = user.permissions.permissions_for_instances(Store).pluck(:object_id)
       expanded_scope = Item.where(store_id: ids)
       initial_scope.union expanded_scope
     end
