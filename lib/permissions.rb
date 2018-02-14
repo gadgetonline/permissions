@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_record'
+require 'active_record_union'
 require 'pundit'
 
 require_relative 'permissions/concerned_with'

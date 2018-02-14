@@ -5,6 +5,7 @@ class ItemPolicy < ApplicationPolicy
     def readable
       readable_scope = no_permissions_scope(scope)
 
+      byebug
       if user.permissions.any?
         readable_scope = scope_for_permitted_items readable_scope
         readable_scope = scope_for_permitted_stores readable_scope
@@ -62,13 +63,20 @@ class ItemPolicy < ApplicationPolicy
     end
 
     def scope_for_permitted_stores(initial_scope) # rubocop:disable Metrics/AbcSize
-      return(initial_scope) if
-        user.permissions.permission_for_class(Store).exists? ||
-        user.permissions.permissions_for_instances(Store).empty?
+      modified_scope = initial_scope
 
-      ids            = user.permissions.permissions_for_instances(Store).pluck(:object_id)
-      expanded_scope = Item.where(store_id: ids)
-      initial_scope.union expanded_scope
+      if user.permissions.permission_for_class(Store).exists?
+        expanded_scope = Item.where.not(store_id: nil)
+        return(modified_scope.union(expanded_scope))
+      end
+
+      if user.permissions.permissions_for_instances(Store).any?
+        ids            = user.permissions.permissions_for_instances(Store).pluck(:object_id)
+        expanded_scope = Item.where(store_id: ids)
+        initial_scope.union expanded_scope
+      end
+
+      modified_scope
     end
   end
 

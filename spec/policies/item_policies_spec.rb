@@ -3,12 +3,14 @@
 RSpec.describe ItemPolicy do
   include_context 'item migration'
   include_context 'organization migration'
+  include_context 'store migration'
   include_context 'user migration'
 
   let!(:items_a)        { create_list :item, 3, organization: organization_a }
   let!(:items_b)        { create_list :item, 2, organization: organization_b }
   let!(:organization_a) { create :organization }
   let!(:organization_b) { create :organization }
+  let!(:store_a)        { create :store, items: [items_b.first], organization: organization_b }
   let!(:user_a)         { create :user, organization: organization_a }
   let!(:user_b)         { create :user, organization: organization_b }
 
@@ -39,13 +41,16 @@ RSpec.describe ItemPolicy do
   describe 'Store grants allow' do
     subject(:items) { ItemPolicy::Scope.new(user_a, Item).readable }
 
-    context 'user with no permissions' do
-      it 'to access only the organization\'s items' do
+    context 'user with no access to the Store class' do
+      it 'to organization items if' do
+        expect(items).to match_array(items_a)
       end
     end
 
     context 'user with access to the Store class' do
-      it 'to have access to all items in any Store' do
+      fit 'can also access the items in any store' do
+        user_a.grant :readable, on: 'Store', to: user_a
+        expect(items).to match_array(items_a + [items_b.first])
       end
     end
 
