@@ -8,17 +8,16 @@ require 'permissions/version'
 
 Gem::Specification.new do |spec|
   spec.authors       = ['Martin Streicher']
-  spec.description   = 'Define fine-grained access control on Active Record models'
-  spec.email         = ['martin.streicher@gmail.com']
+  spec.description   = 'Create fine-grained access controls on Active Record models.'
+  spec.email         = ['martin.streicher@gadget.consulting']
   spec.homepage      = 'https://github.com/gadgetonline/permissions'
   spec.license       = 'MIT'
   spec.name          = 'permissions'
-  spec.summary       = 'Define fine-grained access control on Active Record models'
+  spec.summary       = 'Create fine-grained access controls on Active Record models.'
   spec.version       = Permissions::Version::VERSION
 
   spec.add_dependency 'activerecord'
   spec.add_dependency 'active_record_union'
-  spec.add_dependency 'bitmask_attributes'
   spec.add_dependency 'pundit'
 
   spec.add_development_dependency 'awesome_print'
@@ -35,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rspec-rails'
   spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'shoulda'
   spec.add_development_dependency 'sqlite3'
   spec.add_development_dependency 'table_print'
 

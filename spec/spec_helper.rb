@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Metrics/BlockLength
+ENV['RAILS_ENV'] ||= 'test'
 
 require 'active_record'
 require 'awesome_print'
@@ -10,6 +11,7 @@ require 'database_cleaner'
 require 'factory_bot_rails'
 require 'faker'
 require 'permissions'
+require 'shoulda'
 require 'table_print'
 
 Dir[File.join(File.expand_path('../support', __FILE__), '**', '*.rb')].each { |f| require f }
@@ -30,11 +32,13 @@ RSpec.configure do |config|
     )
 
     ActiveRecord::Migration.create_table  :permissions, force: true do |t|
-      t.datetime   :created_at,   required: true
-      t.string     :object_type,  required: true
-      t.integer    :object_id,    required: false, default: nil
-      t.boolean    :readable,     required: false, default: nil
-      t.belongs_to :grantee,      required: true,  polymorphic: true
+      t.datetime :created_at,   required: true
+      t.datetime :expires_at,   required: false, default: nil
+      t.string   :grantee_type, required: true
+      t.integer  :grantee_id,   required: false, default: nil
+      t.string   :object_type,  required: true
+      t.integer  :object_id,    required: false, default: nil
+      t.integer  :right,        required: true,  default: 0
     end
 
     #   add_index :permissions, %i[object_type object_id]

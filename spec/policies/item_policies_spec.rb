@@ -48,7 +48,7 @@ RSpec.describe ItemPolicy do
     end
 
     context 'user with access to the Store class' do
-      fit 'can also access the items in any store' do
+      it 'can also access the items in any store' do
         user_a.grant :readable, on: 'Store', to: user_a
         expect(items).to match_array(items_a + [items_b.first])
       end

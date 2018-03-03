@@ -4,14 +4,16 @@ class CreatePermissions < ActiveRecord::Migration<%= migration_version %>
   def change
     create_table :permissions, force: true do |t|
       t.datetime :created_at,   required: true
-      t.string   :object_type,  required: true
-      t.integer  :object_id,    required: false, default: nil
-      t.boolean  :readable,     required: false, default: nil
+      t.datetime :expires_at,   required: false, default: nil
       t.string   :grantee_type, required: true
       t.integer  :grantee_id,   required: false, default: nil
+      t.string   :object_type,  required: true
+      t.integer  :object_id,    required: false, default: nil
+      t.integer  :rights,       required: true,  default: 0
     end
 
-    add_index :permissions, %i[object_type object_id]
+    add_index :permissions, %i[expires_at]
     add_index :permissions, %i[grantee_type grantee_id]
+    add_index :permissions, %i[object_type object_id]
   end
 end
