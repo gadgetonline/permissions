@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :permission, class: 'Permissions::Permission' do
-    grantee_type  'PlaceHolder'
+    grantee_type 'PlaceHolder'
     grantee_id
-    object_type   'Widget'
+    object_type 'Widget'
   end
 end

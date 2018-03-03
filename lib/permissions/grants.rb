@@ -30,7 +30,7 @@ module Permissions
             grantee_type: grantee.type,
             object_id:    object.id,
             object_type:  object.type,
-            right =>      true
+            right:        right
           }
 
           Permissions::Permission.where(conditions).first_or_create!

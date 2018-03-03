@@ -14,34 +14,32 @@ RSpec.describe 'grant features' do
   class Widget < ApplicationRecord
   end
 
-  def widget
-    Widget.new name: 'Cheese'
-  end
-
   describe 'records access' do
-    subject(:grant) { widget.grant :readable, on: Store, to: widget }
+    let(:widget) { Widget.create name: 'Cheese' }
+
+    subject(:grant) { widget.grant :read, on: Store, to: widget }
 
     context 'for a class' do
-      specify 'creates an entry' do
+      it 'creates an entry' do
         expect { grant }.to(change { Permissions::Permission.count }.by(1))
       end
 
-      specify 'with the right object name' do
+      it 'with the right object name' do
         grant
         expect(Permissions::Permission.last.object_type).to eq('Store')
       end
 
-      specify 'with an object ID of nil' do
+      it 'with an object ID of nil' do
         grant
         expect(Permissions::Permission.last.object_id).to be_nil
       end
 
-      specify 'with the proper grantee class name' do
+      it 'with the proper grantee class name' do
         grant
         expect(Permissions::Permission.last.grantee_type).to eq('Widget')
       end
 
-      specify 'with the proper grantee ID' do
+      it 'with the proper grantee ID' do
         grant
         expect(Permissions::Permission.last.grantee_id).to eq(widget.id)
       end

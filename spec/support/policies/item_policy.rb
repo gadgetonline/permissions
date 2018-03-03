@@ -28,17 +28,12 @@ class ItemPolicy < ApplicationPolicy
       Arel::Table.new(:items)
     end
 
-    def available_column
+    def available_at_column
       arel_table[:available_at]
     end
 
-    def no_permissions_scope(initial_scope)
-      conditions = { Item.relationship_to_scope_to => user.send(Item.relationship_to_scope_to) }
-      readable_scope = initial_scope.where conditions
-
-      readable_scope
-        .where(hidden: false)
-        .where(available_column.gt(Time.current).or(available_column.eq(nil)))
+    def expires_at_column
+      arel_table[:available_at]
     end
 
     def limit_to_organization_scope
@@ -46,12 +41,20 @@ class ItemPolicy < ApplicationPolicy
       scope.where conditions
     end
 
-    def scope_for_permitted_items(initial_scope) # rubocop:disable Metrics/AbcSize
+    def no_permissions_scope(initial_scope)
+      conditions = { Item.relationship_to_scope_to => user.send(Item.relationship_to_scope_to) }
+      default_scope = initial_scope.where conditions
+
+      default_scope
+        .where(hidden: false)
+        .where(available_at_column.gt(Time.current).or(available_at_column.eq(nil)))
+    end
+
+    def scope_for_permitted_items(initial_scope)
       return(scope.all) if user.permissions.permission_for_class(Item).exists?
-      return(initial_scope) if user.permissions.permissions_for_instances(Item).empty?
 
       ids = user.permissions.permissions_for_instances(Item).pluck(:object_id)
-      Item.where(id: ids)
+      ids.empty? ? initial_scope : Item.where(id: ids)
     end
 
     def scope_for_permitted_organizations(initial_scope) # rubocop:disable Metrics/AbcSize
@@ -64,20 +67,18 @@ class ItemPolicy < ApplicationPolicy
     end
 
     def scope_for_permitted_stores(initial_scope) # rubocop:disable Metrics/AbcSize
-      modified_scope = initial_scope
-
       if user.permissions.permission_for_class(Store).exists?
         expanded_scope = Item.where.not(store_id: nil)
-        return(modified_scope.union(expanded_scope))
+        return initial_scope.union(expanded_scope)
       end
 
       if user.permissions.permissions_for_instances(Store).any?
         ids            = user.permissions.permissions_for_instances(Store).pluck(:object_id)
         expanded_scope = Item.where(store_id: ids)
-        initial_scope.union expanded_scope
+        return initial_scope.union(expanded_scope)
       end
 
-      modified_scope
+      initial_scope
     end
   end
 

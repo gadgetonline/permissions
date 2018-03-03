@@ -2,7 +2,7 @@
 
 module Permissions
   class Permission < ActiveRecord::Base
-    REFERENCE_PAIRS = { grantee_type: :grantee_id, object_type: :object_id }
+    REFERENCE_PAIRS = { grantee_type: :grantee_id, object_type: :object_id }.freeze
     UNKNOWN_CLASS_ERROR_MESSAGE = 'is not a known class'
 
     # Do not alter the values assigned to each key.
