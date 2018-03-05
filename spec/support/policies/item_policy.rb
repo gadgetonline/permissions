@@ -11,7 +11,8 @@ class ItemPolicy < ApplicationPolicy
     def writeable
       initial_scope     = Item.none
       permissions_scope = user.permissions.update_right
-      analyze initial_scope, permissions_scope
+      modified_scope    = analyze initial_scope, permissions_scope
+      visible_scope modified_scope
     end
 
     alias destroyable writeable
@@ -27,15 +28,19 @@ class ItemPolicy < ApplicationPolicy
     end
 
     def default_scope(initial_scope) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      arel_table          = Arel::Table.new(:items)
-      available_at_column = arel_table[:available_at]
-      expires_at_column   = arel_table[:expires_at]
       conditions          = {
         Item.relationship_to_scope_to => user.send(Item.relationship_to_scope_to)
       }
 
+      visible_scope initial_scope.where(conditions)
+    end
+
+    def visible_scope(initial_scope)
+      arel_table          = Arel::Table.new(:items)
+      available_at_column = arel_table[:available_at]
+      expires_at_column   = arel_table[:expires_at]
+
       initial_scope
-        .where(conditions)
         .where(hidden: false)
         .where(available_at_column.lt(Time.current).or(available_at_column.eq(nil)))
         .where(expires_at_column.gt(Time.current).or(expires_at_column.eq(nil)))
@@ -60,6 +65,8 @@ class ItemPolicy < ApplicationPolicy
   def write?
     permitted? :updateable, record
   end
+
+  alias update? write?
 
   private
 

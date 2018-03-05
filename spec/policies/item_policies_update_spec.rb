@@ -15,7 +15,40 @@ RSpec.describe ItemPolicy do
   let!(:user_a)         { create :user, organization: organization_a }
   let!(:user_b)         { create :user, organization: organization_b }
 
-  describe 'The Item policy for a' do
+  describe 'The updateable policy for a' do
+    subject(:allowed) { ItemPolicy.new(user_a, items_a.first).update? }
+
+    context 'user and item' do
+      it 'returns false if not updateable' do
+        expect(allowed).to be_falsey
+      end
+
+      it 'returns true if updateable' do
+        user_a.grant :update, on: items_a.first, to: user_a
+        expect(allowed).to be_truthy
+      end
+
+      it 'returns false if the item is not yet available' do
+        items_a.first.update_attribute(:available_at, Time.current.tomorrow)
+        user_a.grant :update, on: items_a.first, to: user_a
+        expect(allowed).to be_falsey
+      end
+
+      it 'returns false if the item is expired' do
+        items_a.first.update_attribute(:expires_at, Time.current.yesterday)
+        user_a.grant :update, on: items_a.first, to: user_a
+        expect(allowed).to be_falsey
+      end
+
+      it 'returns false if the item is expired' do
+        items_a.first.update_attribute(:hidden, true)
+        user_a.grant :update, on: items_a.first, to: user_a
+        expect(allowed).to be_falsey
+      end
+    end
+  end
+
+  describe 'The updateable policy scope for a' do
     subject(:items) { ItemPolicy::Scope.new(user_a, Item).writeable }
 
     context 'user with no permissions' do
