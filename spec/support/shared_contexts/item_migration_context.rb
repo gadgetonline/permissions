@@ -8,6 +8,7 @@ RSpec.shared_context 'item migration' do
   before(:all) do
     ActiveRecord::Migration.create_table :items, force: true do |t|
       t.datetime    :available_at, default: nil,    required: false, index: true
+      t.datetime    :expires_at,   default: nil,    required: false, index: true
       t.boolean     :hidden,       default: false,  required: false, index: true
       t.string      :name,         default: nil,    required: false
       t.belongs_to  :organization, required: true,  index: true

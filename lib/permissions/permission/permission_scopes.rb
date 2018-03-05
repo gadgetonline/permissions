@@ -2,16 +2,16 @@
 
 module Permissions
   class Permission < ActiveRecord::Base
-    def self.permission_for_class(klass, right: nil)
-      class_name        = klass_to_string klass
-      conditions        = { object_type: class_name, object_id: nil }
+    def self.permissions_for_class(*klasses, right: nil)
+      class_names       = klasses.map { |klass| klass_to_string klass }
+      conditions        = { object_type: class_names, object_id: nil }
       permissions_scope = right ? send(right) : self
       permissions_scope.where conditions
     end
 
-    def self.permissions_for_instances(klass, right: nil)
-      class_name        = klass_to_string klass
-      conditions        = { object_type: class_name }
+    def self.permissions_for_instances(*klasses, right: nil)
+      class_names       = klasses.map { |klass| klass_to_string klass }
+      conditions        = { object_type: class_names }
       permissions_scope = right ? send(right) : self
       permissions_scope
         .where(conditions)

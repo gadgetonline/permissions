@@ -15,52 +15,53 @@ RSpec.describe ItemPolicy do
   let!(:user_a)         { create :user, organization: organization_a }
   let!(:user_b)         { create :user, organization: organization_b }
 
-  describe 'A set of item grants for a' do
-    subject(:items) { ItemPolicy::Scope.new(user_a, Item).readable }
+  describe 'The Item policy for a' do
+    subject(:items) { ItemPolicy::Scope.new(user_a, Item).writeable }
 
     context 'user with no permissions' do
-      it 'yields only the organization\'s items' do
-        expect(items).to match_array(items_a)
+      it 'yields no items' do
+        expect(items).to be_empty
       end
     end
 
     context 'user with read access to the Item class' do
       it 'yields all items' do
-        user_a.grant :read, on: 'Item', to: user_a
+        user_a.grant :update, on: 'Item', to: user_a
         expect(items).to match_array(items_a + items_b)
       end
     end
 
     context 'user with read access to specific items' do
       it 'yields only those items' do
-        user_a.grant :read, on: items_a.first, to: user_a
+        user_a.grant :update, on: items_a.first, to: user_a
         expect(items).to match_array(Array(items_a.first))
-      end
-    end
-  end
-
-  describe 'A set of Store grants for a' do
-    subject(:items) { ItemPolicy::Scope.new(user_a, Item).readable }
-
-    context 'user with no access to the Store class' do
-      it 'yields the organization items' do
-        expect(items).to match_array(items_a)
       end
     end
 
     context 'user with access to the Store class' do
       it 'yields the items in any store' do
-        user_a.grant :read, on: 'Store', to: user_a
-        expect(items).to match_array(items_a + [items_b.first])
+        user_a.grant :update, on: 'Store', to: user_a
+        expect(items).to match_array([items_a.first, items_b.first])
       end
     end
 
     context 'user with access to specific stores' do
-      fit 'yields only the items in those stores' do
-        user_a.grant :read, on: store_b, to: user_a
-        ap items
-        ap items_b.first
+      it 'yields only the items in those stores' do
+        user_a.grant :update, on: store_b, to: user_a
         expect(items).to match_array([items_b.first])
+      end
+    end
+
+    context 'user with specific grants to organizations' do
+      it 'yields the specific organization\'s items' do
+        user_a.grant :update, on: organization_b, to: user_a
+        expect(items).to match_array(items_b)
+      end
+
+      it 'yields the combined organizations\' items' do
+        user_a.grant :update, on: organization_a, to: user_a
+        user_a.grant :update, on: organization_b, to: user_a
+        expect(items).to match_array(items_a + items_b)
       end
     end
   end

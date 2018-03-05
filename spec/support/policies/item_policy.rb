@@ -1,102 +1,73 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/MethodLength
-
 class ItemPolicy < ApplicationPolicy
   class Scope < Scope
     def readable
-      readable_scope = no_permissions_scope(scope)
-
-      if user.permissions.any?
-        readable_scope = scope_for_permitted_items readable_scope
-        readable_scope = scope_for_permitted_stores readable_scope
-        readable_scope = scope_for_permitted_organizations readable_scope
-      end
-
-      readable_scope
+      initial_scope     = default_scope scope
+      permissions_scope = user.permissions.read_right
+      analyze initial_scope, permissions_scope
     end
 
     def writeable
-      writeable_scope = Item.none
-
-      writeable_scope
+      initial_scope     = Item.none
+      permissions_scope = user.permissions.update_right
+      analyze initial_scope, permissions_scope
     end
+
+    alias destroyable writeable
+    alias updateable writeable
 
     private
 
-    def arel_table
-      Arel::Table.new(:items)
+    def analyze(initial_scope, permissions_scope)
+      ItemPolicyHelper.new(
+        initial_scope,
+        permissions_scope
+      ).accessible
     end
 
-    def available_at_column
-      arel_table[:available_at]
-    end
-
-    def expires_at_column
-      arel_table[:available_at]
-    end
-
-    def limit_to_organization_scope
-      conditions = { Item.relationship_to_scope_to => user.send(Item.relationship_to_scope_to) }
-      scope.where conditions
-    end
-
-    def no_permissions_scope(initial_scope)
-      conditions = { Item.relationship_to_scope_to => user.send(Item.relationship_to_scope_to) }
-      default_scope = initial_scope.where conditions
-
-      default_scope
-        .where(hidden: false)
-        .where(available_at_column.gt(Time.current).or(available_at_column.eq(nil)))
-    end
-
-    def scope_for_permitted_items(initial_scope)
-      return(scope.all) if user.permissions.permission_for_class(Item).exists?
-
-      ids = user.permissions.permissions_for_instances(Item).pluck(:object_id)
-      ids.empty? ? initial_scope : Item.where(id: ids)
-    end
-
-    def scope_for_permitted_organizations(initial_scope) # rubocop:disable Metrics/AbcSize
-      return(scope.all) if user.permissions.permission_for_class(Organization).exists?
-      return(initial_scope) if user.permissions.permissions_for_instances(Organization).empty?
-
-      ids            = user.permissions.permission_for_instances(Organization).pluck(:object_id)
-      expanded_scope = Item.where(organization_id: ids)
-      initial_scope.union expanded_scope
-    end
-
-    def scope_for_permitted_stores(initial_scope) # rubocop:disable Metrics/AbcSize
-      if user.permissions.permission_for_class(Store).exists?
-        expanded_scope = Item.where.not(store_id: nil)
-        return initial_scope.union(expanded_scope)
-      end
-
-      if user.permissions.permissions_for_instances(Store).any?
-        ids            = user.permissions.permissions_for_instances(Store).pluck(:object_id)
-        expanded_scope = Item.where(store_id: ids)
-        return initial_scope.union(expanded_scope)
-      end
+    def default_scope(initial_scope) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      arel_table          = Arel::Table.new(:items)
+      available_at_column = arel_table[:available_at]
+      expires_at_column   = arel_table[:expires_at]
+      conditions          = {
+        Item.relationship_to_scope_to => user.send(Item.relationship_to_scope_to)
+      }
 
       initial_scope
+        .where(conditions)
+        .where(hidden: false)
+        .where(available_at_column.lt(Time.current).or(available_at_column.eq(nil)))
+        .where(expires_at_column.gt(Time.current).or(expires_at_column.eq(nil)))
     end
   end
 
-  def create?; end
-
-  def destroy?; end
-
-  def read?
-    item_policy_scope.readable.where(id: record).exists?
+  def create?
+    user
+      .permissions
+      .permissions_for_class(Item, Organization, Store)
+      .exist?
   end
 
-  def write?; end
+  def destroy?
+    permitted? :destroyable, record
+  end
+
+  def read?
+    permitted? :readable, record
+  end
+
+  def write?
+    permitted? :updateable, record
+  end
 
   private
 
-  def item_policy_scope
-    ItemPolicy::Scope.new(user, Item)
+  def permitted?(accessible, record)
+    ItemPolicy::Scope
+      .new(user, Item)
+      .send(accessible)
+      .where(id: record)
+      .exists?
   end
 end
-
-# rubocop:enable Metrics/MethodLength
